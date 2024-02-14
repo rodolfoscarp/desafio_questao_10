@@ -1,3 +1,9 @@
 from django.contrib import admin
+from .models import Locais
 
-# Register your models here.
+
+class LocaisAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Locais, LocaisAdmin)
