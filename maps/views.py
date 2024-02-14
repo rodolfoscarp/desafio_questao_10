@@ -18,16 +18,14 @@ def index(request: HttpRequest):
                    width="100%",
                    height="75%",
                    )
+    folium.Element()
 
     locais = Locais.objects.all()
-
-    details_button = '<a class="link-primary" href="javascript:void(0);" onclick="javascript:showUpdateDeleteModal();">Detalhes</a>'
 
     for local in locais:
         folium.Marker(
             location=[local.latitude, local.longitude],
             tooltip=local.nome,
-            popup=folium.Popup(details_button),
             icon=folium.Icon(color="green"),
         ).add_to(m)
 
@@ -55,8 +53,26 @@ def create(request: HttpRequest):
 
 
 def update(request: HttpRequest, id: int):
+
+    if request.method == "POST":
+        form = CreateLocalForm(request.POST)
+
+        if form.is_valid():
+
+            Locais.objects.filter(pk=id).update(
+                nome=form.cleaned_data['nome'],
+                latitude=form.cleaned_data['latitude'],
+                longitude=form.cleaned_data['longitude'],
+                data_expiracao=form.cleaned_data['data_expiracao']
+            )
+
     return redirect(reverse('index'))
 
 
 def delete(request: HttpRequest, id: int):
+
+    if request.method == "POST":
+        local = Locais.objects.get(pk=id)
+        local.delete()
+
     return redirect(reverse('index'))
